@@ -1,3 +1,7 @@
-.Timespan {
-    width: 5em;
-  }
+#distance {
+    max-width: 35rem;
+}
+
+fieldset>input[type="number"].Timespan {
+  width: 10rem;
+}

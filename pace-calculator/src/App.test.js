@@ -39,6 +39,10 @@ test('calculates Eliud Kipchoge sub 2 hour marathon', async () => {
   assertMarathonPaceCalculation(1, 59, 40, 'Pace = 2:50 /km');
 });
 
+test('seconds has a leading zero', async () => {
+  assertMarathonPaceCalculation(3, 33, 3, 'Pace = 5:02 /km');
+});
+
 function assertMarathonPaceCalculation(hours, minutes, seconds, expectedResult) {
   const { getByText, getByTestId, getByPlaceholderText } = render(<App />);
   //TODO:figure out how to set select value, so UI doesn't have to default value
