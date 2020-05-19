@@ -48,7 +48,7 @@ class PaceCalculator extends React.Component {
     this.handleGoalHoursChange = this.handleGoalHoursChange.bind(this);
     this.handleGoalMinutesChange = this.handleGoalMinutesChange.bind(this);
     this.handleGoalSecondsChange = this.handleGoalSecondsChange.bind(this);
-    this.state = { distance: '42.195', goalHours: '', goalMinutes: '', goalSeconds: '' };
+    this.state = { distance: '', goalHours: '', goalMinutes: '', goalSeconds: '' };
   }
 
   handleDistanceChange(distance) {
