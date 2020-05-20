@@ -1,0 +1,1 @@
+{"version":3,"sources":["App.css"],"names":[],"mappings":"AAAA,UACI,eACJ,CAEA,qCACE,WACF","file":"main.2db1633e.chunk.css","sourcesContent":["#distance {\n    max-width: 35rem;\n}\n\nfieldset>input[type=\"number\"].Timespan {\n  width: 10rem;\n}"]}
