@@ -1,6 +1,30 @@
 import React from 'react';
 import './App.css';
 
+interface PaceCalculatorProps {
+}
+
+interface DistanceProps {
+  distanceInKm: string;
+  onDistanceChanged: (event: string) => void;
+}
+
+interface GoalTimeProps {
+  goalHours: string;
+  goalMinutes: string;
+  goalSeconds: string;
+  onGoalHoursChange: (event: string) => void;
+  onGoalMinutesChange: (event: string) => void;
+  onGoalSecondsChange: (event: string) => void;
+}
+
+class PaceCalculatorModel
+{
+  constructor(public goalHours: number, public goalMinutes: number, public goalSeconds: number, public distance: number)
+  {
+  }
+}
+
 function App() {
   return (
     <main>
@@ -10,39 +34,61 @@ function App() {
       </div>
     </main>);
 }
-
-function calculatePace(goalHours, goalMinutes, goalSeconds, distance) {
-  if (isNaN(goalHours) || goalHours === "" ||
-    isNaN(goalMinutes) || goalMinutes === "" ||
-    isNaN(goalSeconds) || goalSeconds === "" ||
-    isNaN(distance) || distance === "") {
-    return '';
-  }
-  const paceInSeconds = calculatePaceInSeconds(goalHours, goalMinutes, goalSeconds, distance);
-  const minutes = parseInt(paceInSeconds / 60);
-  const seconds = parseInt(paceInSeconds % 60);
+function calculatePace(model: PaceCalculatorModel) :string {
+  const paceInSeconds = calculatePaceInSeconds(model);
+  const minutes = Math.floor(paceInSeconds / 60);
+  const seconds = Math.floor(paceInSeconds % 60);
   var pace = minutes + ":" + seconds.toString().padStart(2, "0");
   return "Pace = " + pace + " /km ";
 }
 
-function calculatePaceInSeconds(goalHours, goalMinutes, goalSeconds, distance) {
-  const hoursInSeconds = convertHoursToSeconds(goalHours);
-  const minutesInSeconds = convertMinutesToSeconds(goalMinutes);
-  const goalTime = hoursInSeconds + minutesInSeconds + parseInt(goalSeconds);
-  const paceInSeconds = goalTime / distance;
+function validate(state: PaceCalculatorState) :PaceCalculatorModel | undefined {
+  if(state.goalHours === "" ||  
+     state.goalMinutes === "" ||  
+     state.goalSeconds === ""  || 
+     state.distance === "" )
+  {
+    return undefined;
+  }
+  const hours = parseInt(state.goalHours);
+  const minutes = parseInt(state.goalMinutes);
+  const seconds = parseInt(state.goalSeconds);
+  const distance = Number(state.distance);
+  if(!isNaN(hours) && !isNaN(minutes) && !isNaN(seconds) && !isNaN(distance))
+  {
+    return new PaceCalculatorModel(hours, minutes, seconds, distance);
+  }
+  else
+  {
+    return undefined;
+  }  
+}
+
+function calculatePaceInSeconds(model: PaceCalculatorModel) {
+  const hoursInSeconds = convertHoursToSeconds(model!.goalHours);
+  const minutesInSeconds = convertMinutesToSeconds(model!.goalMinutes);
+  const goalTime = hoursInSeconds + minutesInSeconds + model!.goalSeconds;
+  const paceInSeconds = goalTime / model!.distance;
   return paceInSeconds;
 }
 
-function convertHoursToSeconds(hours) {
-  return (parseInt(hours) * 60 * 60);
+function convertHoursToSeconds(hours: number):number {
+  return (hours * 60 * 60);
 }
 
-function convertMinutesToSeconds(minutes) {
-  return parseInt(minutes) * 60;
+function convertMinutesToSeconds(minutes: number) {
+  return minutes * 60;
 }
 
-class PaceCalculator extends React.Component {
-  constructor(props) {
+interface PaceCalculatorState {
+  distance: string;
+  goalHours: string;
+  goalMinutes: string;
+  goalSeconds: string;
+}
+
+class PaceCalculator extends React.Component<PaceCalculatorProps, PaceCalculatorState> {
+  constructor(props: PaceCalculatorProps) {
     super(props);
     this.handleDistanceChange = this.handleDistanceChange.bind(this);
     this.handleGoalHoursChange = this.handleGoalHoursChange.bind(this);
@@ -51,19 +97,19 @@ class PaceCalculator extends React.Component {
     this.state = { distance: '', goalHours: '', goalMinutes: '', goalSeconds: '' };
   }
 
-  handleDistanceChange(distance) {
+  handleDistanceChange(distance: string) {
     this.setState({ distance });
   }
 
-  handleGoalHoursChange(goalHours) {
+  handleGoalHoursChange(goalHours: string) {
     this.setState({ goalHours });
   }
 
-  handleGoalMinutesChange(goalMinutes) {
+  handleGoalMinutesChange(goalMinutes: string) {
     this.setState({ goalMinutes });
   }
 
-  handleGoalSecondsChange(goalSeconds) {
+  handleGoalSecondsChange(goalSeconds: string) {
     this.setState({ goalSeconds });
   }
 
@@ -72,7 +118,8 @@ class PaceCalculator extends React.Component {
     const goalHours = this.state.goalHours;
     const goalMinutes = this.state.goalMinutes;
     const goalSeconds = this.state.goalSeconds;
-    const pace = calculatePace(goalHours, goalMinutes, goalSeconds, distance);
+    const model = validate(this.state);
+    const pace = model !== undefined ? calculatePace(model) : "";
     return (
       <>
         <GoalTime
@@ -88,13 +135,14 @@ class PaceCalculator extends React.Component {
   }
 }
 
-class Distance extends React.Component {
-  constructor(props) {
+class Distance extends React.Component<DistanceProps> {
+  constructor(props: DistanceProps) {
     super(props);
     this.handleChange = this.handleChange.bind(this);
   }
 
-  handleChange(e) {
+
+  handleChange(e: React.ChangeEvent<HTMLSelectElement>) {
     this.props.onDistanceChanged(e.target.value);
   }
 
@@ -114,23 +162,23 @@ class Distance extends React.Component {
   }
 }
 
-class GoalTime extends React.Component {
-  constructor(props) {
+class GoalTime extends React.Component<GoalTimeProps> {
+  constructor(props: GoalTimeProps) {
     super(props);
     this.handleHoursChange = this.handleHoursChange.bind(this);
     this.handleMinutesChange = this.handleMinutesChange.bind(this);
     this.handleSecondsChange = this.handleSecondsChange.bind(this);
   }
 
-  handleHoursChange(e) {
+  handleHoursChange(e: React.ChangeEvent<HTMLInputElement>) {
     this.props.onGoalHoursChange(e.target.value);
   }
 
-  handleMinutesChange(e) {
+  handleMinutesChange(e: React.ChangeEvent<HTMLInputElement>) {
     this.props.onGoalMinutesChange(e.target.value);
   }
 
-  handleSecondsChange(e) {
+  handleSecondsChange(e: React.ChangeEvent<HTMLInputElement>) {
     this.props.onGoalSecondsChange(e.target.value);
   }
 

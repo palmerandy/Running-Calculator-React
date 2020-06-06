@@ -43,7 +43,7 @@ test('seconds has a leading zero', async () => {
   assertMarathonPaceCalculation(3, 33, 3, 'Pace = 5:02 /km');
 });
 
-function assertMarathonPaceCalculation(hours, minutes, seconds, expectedResult) {
+function assertMarathonPaceCalculation(hours: number, minutes: number, seconds: number, expectedResult: string) {
   const { getByText, getByTestId, getByPlaceholderText } = render(<App />);
   //TODO:figure out how to set select value, so UI doesn't have to default value
   //await selectEvent.select(getByText('Distance'), 'Marathon');
@@ -58,6 +58,7 @@ function assertMarathonPaceCalculation(hours, minutes, seconds, expectedResult) 
   fireEvent.change(getByPlaceholderText('seconds'), {
     target: { value: seconds },
   });
-  const linkElement = getByText(expectedResult);
+
+  const linkElement = getByText(expectedResult);//note: for the test to pass, the distance state property must be set to 42.195
   expect(linkElement).toBeInTheDocument();
 }
