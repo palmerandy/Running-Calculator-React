@@ -1,8 +1,7 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
-import { render, screen, getByTitle, getByLabelText, fireEvent, getByPlaceholderText } from '@testing-library/react';
+import { render, fireEvent } from '@testing-library/react';
 import App from './App';
-//import userEvent from "@testing-library/user-event";
 
 test('renders without crashing', () => {
   const div = document.createElement('div');
